@@ -600,6 +600,111 @@
         grid-template-columns: 1fr;
       }
     }
+    .graphique-boite {
+      background: var(--fond-carte);
+      border: 1px solid var(--bordure);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .graphique-haut {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .kd-moyen {
+      font-size: 40px;
+      font-weight: bold;
+    }
+
+    .svg-texte {
+      fill: var(--gris);
+      font-size: 12px;
+      font-family: Arial, sans-serif;
+    }
+
+    .svg-ligne {
+      stroke: var(--bordure);
+      stroke-width: 1;
+    }
+
+    .svg-moyenne {
+      stroke: var(--gris);
+      stroke-width: 1.5;
+      stroke-dasharray: 6 5;
+    }
+
+    .form-match {
+      margin-top: 20px;
+      background: var(--fond-carte);
+      border: 1px solid var(--bordure);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .form-match h3 {
+      margin: 0 0 14px;
+      font-size: 18px;
+    }
+
+    .champs-match {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1.2fr 0.8fr 0.8fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .form-match input,
+    .form-match select {
+      width: 100%;
+      box-sizing: border-box;
+      background: #0a0a0d;
+      color: white;
+      color-scheme: dark;
+      border: 1px solid var(--bordure);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-family: inherit;
+      font-size: 14px;
+    }
+
+    .form-match input:focus,
+    .form-match select:focus {
+      outline: none;
+      border-color: var(--rouge);
+    }
+
+    .form-bas {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .bouton-fantome {
+      background: none;
+      border: 1px solid var(--bordure);
+      color: var(--gris);
+      border-radius: 6px;
+      padding: 10px 18px;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .bouton-fantome:hover {
+      color: white;
+      border-color: var(--gris);
+    }
+
+    @media (max-width: 800px) {
+      .champs-match {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
   </style>
 </head>
 <body>
@@ -728,7 +833,16 @@
       </div>
       <button class="bouton" id="bouton-voir" onclick="basculer()">Voir tout</button>
     </div>
-
+    <div class="graphique-boite">
+      <div class="graphique-haut">
+        <div>
+          <div class="petit">K/D moyen sur les 7 derniers matchs</div>
+          <div class="kd-moyen" id="moyenne-kd">–</div>
+        </div>
+        <div class="petit">Ligne pointillée : ta moyenne</div>
+      </div>
+      <div id="graphique"></div>
+    </div>
     <div class="tableau-boite">
       <table>
         <thead>
@@ -742,6 +856,23 @@
         </thead>
         <tbody id="matchs"></tbody>
       </table>
+    </div>
+    <div class="form-match">
+      <h3>Ajouter un match</h3>
+
+      <div class="champs-match">
+        <input type="date" id="match-date" aria-label="Date du match">
+        <select id="match-map" aria-label="Map"></select>
+        <input type="text" id="match-agent" placeholder="Agent" aria-label="Agent">
+        <input type="number" min="0" id="match-kills" placeholder="Kills" aria-label="Kills">
+        <input type="number" min="0" id="match-morts" placeholder="Morts" aria-label="Morts">
+      </div>
+
+      <div class="form-bas">
+        <button class="bouton" onclick="ajouterMatch()">Ajouter le match</button>
+        <button class="bouton-fantome" onclick="reinitialiserMatchs()">Remettre les matchs d'exemple</button>
+        <span class="petit" id="message-match" aria-live="polite"></span>
+      </div>
     </div>
   </section>
 
@@ -928,14 +1059,21 @@ function afficherAgents() {
     chargerAgents();
 
     // ---------- Leçon 7 : les derniers matchs ----------
-    const listeMatchs = [
+        let listeMatchs = [
       { date: "Aujourd'hui",    map: "Ascent", agent: "Viper",     kills: 18, morts: 14, impact: 4 },
       { date: "Hier",           map: "Haven",  agent: "Sova",      kills: 21, morts: 17, impact: 12 },
       { date: "Hier",           map: "Lotus",  agent: "Killjoy",   kills: 13, morts: 16, impact: -3 },
       { date: "Il y a 2 jours", map: "Split",  agent: "Cypher",    kills: 19, morts: 12, impact: 9 },
       { date: "Il y a 3 jours", map: "Bind",   agent: "Brimstone", kills: 15, morts: 15, impact: 1 }
     ];
-
+    try {
+      const matchsSauvegardes = localStorage.getItem("valhub-matchs");
+      if (matchsSauvegardes) {
+        listeMatchs = JSON.parse(matchsSauvegardes);
+      }
+    } catch (erreur) {
+      console.log("Lecture impossible, on garde les matchs d'exemple");
+    }
     const zoneMatchs = document.getElementById("matchs");
     const boutonVoir = document.getElementById("bouton-voir");
     let toutVoir = false;
@@ -965,7 +1103,7 @@ function afficherAgents() {
           <tr>
             <td>${m.date}</td>
             <td>${m.map}</td>
-            <td>${m.agent}</td>
+                        <td>${echapper(m.agent)}</td>
             <td>${m.kills} / ${m.morts}</td>
             <td class="${classe}">${texte}</td>
           </tr>
@@ -1136,6 +1274,153 @@ function afficherAgents() {
     }
 
     afficherMesLineups();
+    // ---------- Leçon 16 : le graphique et l'ajout de matchs ----------
+    const zoneGraphique = document.getElementById("graphique");
+    const zoneMoyenne = document.getElementById("moyenne-kd");
+    const messageMatch = document.getElementById("message-match");
+    const matchDate = document.getElementById("match-date");
+    const matchMap = document.getElementById("match-map");
+    const matchAgent = document.getElementById("match-agent");
+    const matchKills = document.getElementById("match-kills");
+    const matchMorts = document.getElementById("match-morts");
+
+    for (let i = 0; i < maps.length; i++) {
+      matchMap.innerHTML += `<option value="${maps[i].nom}">${maps[i].nom}</option>`;
+    }
+
+    function calculerKD(m) {
+      let morts = m.morts;
+      if (morts === 0) {
+        morts = 1;
+      }
+      return m.kills / morts;
+    }
+
+    function formaterKD(nombre) {
+      return nombre.toFixed(2).replace(".", ",");
+    }
+
+    function dessinerGraphique() {
+      if (listeMatchs.length === 0) {
+        zoneGraphique.innerHTML = `<div class="petit">Aucun match à afficher.</div>`;
+        zoneMoyenne.textContent = "–";
+        return;
+      }
+
+      const nombre = Math.min(7, listeMatchs.length);
+      const recents = listeMatchs.slice(0, nombre).reverse();
+
+      const valeurs = [];
+      let total = 0;
+      let maxKD = 2;
+      for (let i = 0; i < recents.length; i++) {
+        const kd = calculerKD(recents[i]);
+        valeurs.push(kd);
+        total += kd;
+        if (kd > maxKD) {
+          maxKD = kd;
+        }
+      }
+      const moyenne = total / recents.length;
+      zoneMoyenne.textContent = formaterKD(moyenne);
+
+      const largeur = 600;
+      const base = 190;
+      const hauteurUtile = 160;
+      const echelle = hauteurUtile / maxKD;
+      const place = largeur / recents.length;
+      const largeurBarre = place * 0.55;
+
+      let svg = `<svg viewBox="0 0 ${largeur} 220" width="100%" role="img" aria-label="Graphique du K/D des derniers matchs">`;
+      svg += `<line class="svg-ligne" x1="0" y1="${base}" x2="${largeur}" y2="${base}"></line>`;
+
+      for (let i = 0; i < recents.length; i++) {
+        const m = recents[i];
+        const kd = valeurs[i];
+        const hauteur = kd * echelle;
+        const x = i * place + (place - largeurBarre) / 2;
+        const y = base - hauteur;
+        const milieu = x + largeurBarre / 2;
+
+        let couleur = "var(--rouge)";
+        if (kd >= 1) {
+          couleur = "var(--vert)";
+        }
+
+        svg += `
+          <g>
+            <rect x="${x}" y="${y}" width="${largeurBarre}" height="${hauteur}" rx="4" style="fill: ${couleur}; opacity: 0.85">
+              <title>${echapper(m.map)} : K/D ${formaterKD(kd)} (${m.kills} / ${m.morts})</title>
+            </rect>
+            <text class="svg-texte" x="${milieu}" y="${y - 6}" text-anchor="middle">${formaterKD(kd)}</text>
+            <text class="svg-texte" x="${milieu}" y="${base + 18}" text-anchor="middle">${echapper(m.map)}</text>
+          </g>
+        `;
+      }
+
+      const yMoyenne = base - moyenne * echelle;
+      svg += `<line class="svg-moyenne" x1="0" y1="${yMoyenne}" x2="${largeur}" y2="${yMoyenne}"></line>`;
+      svg += `</svg>`;
+
+      zoneGraphique.innerHTML = svg;
+    }
+
+    function sauvegarderMatchs() {
+      try {
+        localStorage.setItem("valhub-matchs", JSON.stringify(listeMatchs));
+      } catch (erreur) {
+        console.log("Sauvegarde impossible");
+      }
+    }
+
+    function ajouterMatch() {
+      const kills = parseInt(matchKills.value, 10);
+      const morts = parseInt(matchMorts.value, 10);
+
+      if (matchDate.value === "" || isNaN(kills) || isNaN(morts) || kills < 0 || morts < 0) {
+        messageMatch.textContent = "Remplis la date, les kills et les morts (des nombres positifs).";
+        return;
+      }
+
+      const morceaux = matchDate.value.split("-");
+      const dateTexte = morceaux[2] + "/" + morceaux[1] + "/" + morceaux[0];
+
+      let agent = matchAgent.value.trim();
+      if (agent === "") {
+        agent = "–";
+      }
+
+      const match = {
+        date: dateTexte,
+        map: matchMap.value,
+        agent: agent,
+        kills: kills,
+        morts: morts,
+        impact: kills - morts
+      };
+
+      listeMatchs.unshift(match);
+      sauvegarderMatchs();
+
+      matchKills.value = "";
+      matchMorts.value = "";
+      matchAgent.value = "";
+      messageMatch.textContent = "Match ajouté !";
+
+      afficherMatchs();
+      dessinerGraphique();
+    }
+
+    function reinitialiserMatchs() {
+      try {
+        localStorage.removeItem("valhub-matchs");
+      } catch (erreur) {
+        console.log("Impossible d'effacer");
+      }
+      location.reload();
+    }
+
+    dessinerGraphique();
 </script>
 
 </body>
