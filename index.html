@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VALHUB</title>
+     <style>
+    :root {
+      --rouge: #ff2d55;
+      --gris: #8d8d99;
+      --vert: #4ade80;
+      --fond-carte: #111116;
+      --bordure: #23232b;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: #0a0a0d;
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 40px;
+      border-bottom: 1px solid var(--bordure);
+    }
+
+    a {
+      color: var(--gris);
+      text-decoration: none;
+      margin: 0 14px;
+    }
+
+    a:hover {
+      color: white;
+    }
+
+    .logo {
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    .logo span {
+      color: var(--rouge);
+    }
+
+    .bouton {
+      background: var(--rouge);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 18px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .accueil {
+      padding: 100px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 40px;
+    }
+
+    .accueil h1 {
+      font-size: 56px;
+      margin: 0;
+    }
+
+    .accueil h1 span {
+      color: var(--rouge);
+    }
+
+    .accueil p {
+      color: var(--gris);
+      max-width: 450px;
+      margin: 20px 0;
+    }
+
+    .carte {
+      background: var(--fond-carte);
+      border: 1px solid var(--bordure);
+      border-radius: 12px;
+      padding: 20px;
+      width: 340px;
+    }
+
+    .carte-haut, .carte-bas {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .petit {
+      color: var(--gris);
+      font-size: 13px;
+    }
+
+    .vert {
+      color: var(--vert);
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .gros-chiffre {
+      font-size: 52px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    .barres {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      height: 150px;
+      margin: 18px 0 8px;
+    }
+
+    .barre {
+      flex: 1;
+      background: var(--rouge);
+      border-radius: 4px 4px 0 0;
+      opacity: 0.7;
+    }
+
+    .barre:hover {
+      opacity: 1;
+    }
+
+    .dashboard {
+      padding: 60px 40px;
+    }
+
+    .dash-haut {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .dashboard h2 {
+      font-size: 32px;
+      margin: 6px 0 0;
+    }
+
+    .etiquette {
+      color: var(--rouge);
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .synchro {
+      color: var(--vert);
+      font-size: 12px;
+      border: 1px solid var(--vert);
+      border-radius: 99px;
+      padding: 4px 12px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .stat {
+      background: var(--fond-carte);
+      border: 1px solid var(--bordure);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .valeur {
+      font-size: 26px;
+      font-weight: bold;
+      margin: 6px 0 2px;
+    }
+
+    .maps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .map {
+      background: var(--fond-carte);
+      border: 1px solid var(--bordure);
+      border-radius: 12px;
+      padding: 0;
+      color: white;
+      font-family: inherit;
+      font-size: 14px;
+      text-align: left;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .map:hover,
+    .map.choisie {
+      border-color: var(--rouge);
+    }
+
+    .map-image {
+      height: 90px;
+      display: flex;
+      align-items: flex-end;
+      padding: 12px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .map-texte {
+      padding: 12px 16px;
+    }
+
+    .detail {
+      margin-top: 14px;
+      background: var(--fond-carte);
+      border: 1px solid var(--bordure);
+      border-radius: 12px;
+      padding: 20px;
+      color: var(--gris);
+    }
+
+    .filtres {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 24px 0 16px;
+    }
+
+    .filtre {
+      background: var(--fond-carte);
+      border: 1px solid var(--bordure);
+      border-radius: 99px;
+      padding: 6px 14px;
+      font-family: inherit;
+      font-size: 13px;
+      color: var(--gris);
+      cursor: pointer;
+    }
+
+    .filtre.actif {
+      background: var(--rouge);
+      border-color: var(--rouge);
+      color: white;
+    }
+
+    .agents-grille {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .agent {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--fond-carte);
+      border: 1px solid var(--bordure);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .agent-photo {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      background: #0a0a0d;
+      object-fit: cover;
+    }
+
+    .agent-infos {
+      flex: 1;
+    }
+
+    .agent-infos b {
+      display: block;
+    }
+
+    .tableau-boite {
+      background: var(--fond-carte);
+      border: 1px solid var(--bordure);
+      border-radius: 12px;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th {
+      text-align: left;
+      font-weight: normal;
+      color: var(--gris);
+      font-size: 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--bordure);
+    }
+
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--bordure);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .positif {
+      color: var(--vert);
+      font-weight: bold;
+    }
+
+    .negatif {
+      color: var(--rouge);
+      font-weight: bold;
+    }
+
+    .agent {
+      cursor: pointer;
+    }
+
+    .agent:hover {
+      border-color: var(--rouge);
+    }
+
+    .fond-modale {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      box-sizing: border-box;
+      z-index: 10;
+    }
+
+    .fond-modale.ouverte {
+      display: flex;
+    }
+
+    .modale {
+      position: relative;
+      background: var(--fond-carte);
+      border: 1px solid var(--bordure);
+      border-radius: 12px;
+      padding: 24px;
+      width: 100%;
+      max-width: 560px;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+
+    .fermer {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: none;
+      border: none;
+      color: var(--gris);
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .modale-haut {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .modale-haut img {
+      width: 72px;
+      height: 72px;
+      border-radius: 12px;
+      background: #0a0a0d;
+    }
+
+    .modale h3 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .capacite {
+      display: flex;
+      gap: 12px;
+      padding: 12px 0;
+      border-top: 1px solid var(--bordure);
+    }
+
+    .capacite img {
+      width: 36px;
+      height: 36px;
+      padding: 4px;
+      box-sizing: border-box;
+      border-radius: 8px;
+      background: #0a0a0d;
+    }
+
+    .capacite b {
+      display: block;
+    }
+    .etoile {
+      background: none;
+      border: none;
+      color: var(--gris);
+      font-size: 22px;
+      cursor: pointer;
+      padding: 4px 8px;
+    }
+
+    .etoile:hover {
+      color: white;
+    }
+
+    .etoile.allumee {
+      color: #fbbf24;
+    }
+    /* ---------- Leçon 11 : petits écrans ---------- */
+
+    table {
+      min-width: 480px;
+    }
+
+    @media (max-width: 800px) {
+      nav {
+        flex-wrap: wrap;
+        gap: 12px;
+        padding: 12px 20px;
+      }
+
+      .liens {
+        order: 3;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .liens a {
+        margin: 0;
+      }
+
+      .accueil {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 50px 20px;
+      }
+
+      .accueil h1 {
+        font-size: 40px;
+      }
+
+      .carte {
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .dashboard {
+        padding: 40px 20px;
+      }
+
+      .dash-haut {
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .maps,
+      .agents-grille {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 500px) {
+      .stats,
+      .maps,
+      .agents-grille {
+        grid-template-columns: 1fr;
+      }
+
+      .accueil h1 {
+        font-size: 34px;
+      }
+    }
+    .pied {
+      text-align: center;
+      color: var(--gris);
+      font-size: 12px;
+      padding: 30px 20px 50px;
+      border-top: 1px solid var(--bordure);
+    }
+    .formulaire {
+      margin-top: 30px;
+      background: var(--fond-carte);
+      border: 1px solid var(--bordure);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .formulaire h3 {
+      margin: 0 0 14px;
+      font-size: 18px;
+    }
+
+    .champs {
+      display: grid;
+      grid-template-columns: 1fr 1fr 2fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .formulaire input,
+    .formulaire select,
+    .formulaire textarea {
+      width: 100%;
+      box-sizing: border-box;
+      background: #0a0a0d;
+      color: white;
+      border: 1px solid var(--bordure);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-family: inherit;
+      font-size: 14px;
+    }
+
+    .formulaire input:focus,
+    .formulaire select:focus,
+    .formulaire textarea:focus {
+      outline: none;
+      border-color: var(--rouge);
+    }
+
+    .formulaire textarea {
+      display: block;
+      height: 80px;
+      resize: vertical;
+      margin-bottom: 12px;
+    }
+
+    .mes-lineups {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .lineup {
+      background: var(--fond-carte);
+      border: 1px solid var(--bordure);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .lineup-haut {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .supprimer {
+      background: none;
+      border: none;
+      color: var(--gris);
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .supprimer:hover {
+      color: var(--rouge);
+    }
+
+    .note {
+      color: var(--gris);
+      font-size: 14px;
+      margin: 8px 0 0;
+      white-space: pre-wrap;
+    }
+
+    @media (max-width: 800px) {
+      .champs,
+      .mes-lineups {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo">VAL<span>HUB</span></div>
+        <div class="liens">
+      <a href="#dashboard">Dashboard</a>
+      <a href="#lineups">Lineups</a>
+      <a href="#agents">Agents</a>
+      <a href="#stats">Statistiques</a>
+    </div>
+    <button class="bouton">Connecter Riot</button>
+  </nav>
+
+  <section class="accueil">
+
+    <div class="texte">
+      <h1>Joue mieux.<br><span>Analyse plus.</span></h1>
+      <p>Ton centre de contrôle pour apprendre les lineups, comprendre tes performances et progresser match après match.</p>
+      <button class="bouton">Explorer les lineups</button>
+    </div>
+
+    <div class="carte">
+      <div class="carte-haut">
+        <span class="petit">Performance</span>
+        <span class="vert">+18,4 %</span>
+      </div>
+
+      <div class="gros-chiffre">1,24 <span class="petit">K/D</span></div>
+
+      <div class="barres">
+        <div class="barre" style="height: 53%"></div>
+        <div class="barre" style="height: 65%"></div>
+        <div class="barre" style="height: 56%"></div>
+        <div class="barre" style="height: 76%"></div>
+        <div class="barre" style="height: 85%"></div>
+        <div class="barre" style="height: 68%"></div>
+        <div class="barre" style="height: 95%"></div>
+      </div>
+
+      <div class="carte-bas">
+        <span class="petit">7 derniers matchs</span>
+        <span class="petit">ADR 164</span>
+      </div>
+    </div>
+
+  </section>
+
+  <section class="dashboard" id="dashboard">
+
+    <div class="dash-haut">
+      <div>
+        <div class="etiquette">Ton profil</div>
+        <h2>Dashboard</h2>
+      </div>
+      <span class="synchro">● Données synchronisées</span>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="petit">Rang actuel</div>
+        <div class="valeur">Ascendant 2</div>
+        <div class="petit">68 RR</div>
+      </div>
+
+      <div class="stat">
+        <div class="petit">Winrate</div>
+        <div class="valeur">57,8 %</div>
+        <div class="vert">+4,2 % cette semaine</div>
+      </div>
+
+      <div class="stat">
+        <div class="petit">K/D</div>
+        <div class="valeur">1,24</div>
+        <div class="petit">Sur 37 matchs</div>
+      </div>
+
+      <div class="stat">
+        <div class="petit">HS %</div>
+        <div class="valeur">27,6 %</div>
+        <div class="vert">+2,8 % vs période précédente</div>
+      </div>
+    </div>
+
+  </section>
+
+  <section class="dashboard lineups" id="lineups">
+    <div class="etiquette">Base d'entraînement</div>
+    <h2>Lineups</h2>
+
+    <div class="maps" id="maps"></div>
+
+    <div class="detail" id="detail">Clique sur une map pour voir ses lineups.</div>
+    <div class="formulaire">
+      <h3>Ajouter un de tes lineups</h3>
+
+      <div class="champs">
+        <select id="champ-map" aria-label="Map"></select>
+        <input type="text" id="champ-agent" placeholder="Agent (ex : Sova)" aria-label="Agent">
+        <input type="text" id="champ-titre" placeholder="Titre (ex : Fléchette site A)" aria-label="Titre">
+      </div>
+
+      <textarea id="champ-note" placeholder="Ta note : où te placer, où viser..." aria-label="Note"></textarea>
+      <button class="bouton" onclick="ajouterLineup()">Ajouter</button>
+    </div>
+
+    <div class="mes-lineups" id="mes-lineups"></div>
+  </section>
+
+  <section class="dashboard" id="agents">
+    <div class="etiquette">Maîtrise</div>
+    <h2>Agents</h2>
+
+    <div class="petit" id="message-agents">Chargement des agents...</div>
+
+    <div class="filtres" id="filtres"></div>
+    <div class="agents-grille" id="agents-liste"></div>
+  </section>
+
+  <section class="dashboard" id="stats">
+    <div class="dash-haut">
+      <div>
+        <div class="etiquette">Analyse</div>
+        <h2>Derniers matchs</h2>
+      </div>
+      <button class="bouton" id="bouton-voir" onclick="basculer()">Voir tout</button>
+    </div>
+
+    <div class="tableau-boite">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Map</th>
+            <th>Agent</th>
+            <th>K / D</th>
+            <th>Impact</th>
+          </tr>
+        </thead>
+        <tbody id="matchs"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="fond-modale" id="modale" onclick="fermerAgent()">
+    <div class="modale" onclick="event.stopPropagation()">
+      <button class="fermer" onclick="fermerAgent()">✕</button>
+      <div id="contenu-modale"></div>
+    </div>
+  </div>
+  <footer class="pied">
+    VALHUB est un projet de fan réalisé pour apprendre à jouer correctement et à monter en rank. Il n'est ni affilié à Riot Games, ni approuvé par Riot Games.
+    Les statistiques affichées sont fictives. Données des agents : valorant-api.com.
+  </footer>
+  <script>
+    // ---------- Leçon 5 : les maps ----------
+    const maps = [
+      { nom: "Ascent", lineups: 42, couleur: "#3a3f5c" },
+      { nom: "Bind",   lineups: 38, couleur: "#5c4a2e" },
+      { nom: "Haven",  lineups: 31, couleur: "#2e5450" },
+      { nom: "Lotus",  lineups: 27, couleur: "#5c2e44" },
+      { nom: "Split",  lineups: 35, couleur: "#33404f" },
+      { nom: "Sunset", lineups: 29, couleur: "#5c4430" }
+    ];
+
+    const zoneMaps = document.getElementById("maps");
+    const zoneDetail = document.getElementById("detail");
+
+    for (let i = 0; i < maps.length; i++) {
+      const m = maps[i];
+      zoneMaps.innerHTML += `
+        <button class="map" onclick="choisir(${i})">
+          <div class="map-image" style="background: linear-gradient(135deg, ${m.couleur}, #111116)">${m.nom}</div>
+          <div class="map-texte">${m.lineups} lineups disponibles</div>
+        </button>
+      `;
+    }
+
+    function choisir(numero) {
+      const m = maps[numero];
+      zoneDetail.innerHTML = "<b>" + m.nom + "</b> : " + m.lineups + " lineups disponibles.";
+
+      const cartes = document.querySelectorAll(".map");
+      for (let i = 0; i < cartes.length; i++) {
+        cartes[i].classList.remove("choisie");
+      }
+      cartes[numero].classList.add("choisie");
+    }
+
+    // ---------- Leçons 6 et 8 : les agents (vraies données) ----------
+    let listeAgents = [];
+        let roles = ["Tous", "Favoris"];
+    let roleChoisi = "Tous";
+
+    let favoris = [];
+    try {
+      const sauvegarde = localStorage.getItem("valhub-favoris");
+      if (sauvegarde) {
+        favoris = JSON.parse(sauvegarde);
+      }
+    } catch (erreur) {
+      favoris = [];
+    }
+
+    const zoneFiltres = document.getElementById("filtres");
+    const zoneAgents = document.getElementById("agents-liste");
+    const messageAgents = document.getElementById("message-agents");
+
+    async function chargerAgents() {
+      try {
+        const reponse = await fetch("https://valorant-api.com/v1/agents?isPlayableCharacter=true&language=fr-FR");
+        const donnees = await reponse.json();
+        listeAgents = donnees.data;
+
+        for (let i = 0; i < listeAgents.length; i++) {
+          const nomRole = listeAgents[i].role.displayName;
+          if (!roles.includes(nomRole)) {
+            roles.push(nomRole);
+          }
+        }
+
+        messageAgents.textContent = listeAgents.length + " agents chargés depuis valorant-api.com";
+        afficherFiltres();
+    function sauvegarderFavoris() {
+      try {
+        localStorage.setItem("valhub-favoris", JSON.stringify(favoris));
+      } catch (erreur) {
+        console.log("Sauvegarde impossible");
+      }
+    }
+
+    function basculerFavori(identifiant) {
+      const position = favoris.indexOf(identifiant);
+      if (position === -1) {
+        favoris.push(identifiant);
+      } else {
+        favoris.splice(position, 1);
+      }
+      sauvegarderFavoris();
+      afficherFiltres();
+      afficherAgents();
+    }
+        afficherAgents();
+      } catch (erreur) {
+        messageAgents.textContent = "Impossible de charger les agents. Vérifie ta connexion internet.";
+      }
+    }
+
+    function afficherFiltres() {
+      zoneFiltres.innerHTML = "";
+      for (let i = 0; i < roles.length; i++) {
+        let classe = "filtre";
+        if (roles[i] === roleChoisi) {
+          classe = "filtre actif";
+        }
+        zoneFiltres.innerHTML += `<button class="${classe}" onclick="filtrer('${roles[i]}')">${roles[i]}</button>`;
+      }
+    }
+
+    function sauvegarderFavoris() {
+      try {
+        localStorage.setItem("valhub-favoris", JSON.stringify(favoris));
+      } catch (erreur) {
+        console.log("Sauvegarde impossible");
+      }
+    }
+
+    function basculerFavori(identifiant) {
+      const position = favoris.indexOf(identifiant);
+      if (position === -1) {
+        favoris.push(identifiant);
+      } else {
+        favoris.splice(position, 1);
+      }
+      sauvegarderFavoris();
+      afficherFiltres();
+      afficherAgents();
+    }        
+function afficherAgents() {
+      zoneAgents.innerHTML = "";
+
+      if (roleChoisi === "Favoris" && favoris.length === 0) {
+        zoneAgents.innerHTML = `<div class="petit">Aucun favori pour l'instant. Clique sur ☆ sur un agent pour l'ajouter.</div>`;
+        return;
+      }
+
+      for (let i = 0; i < listeAgents.length; i++) {
+        const a = listeAgents[i];
+        const estFavori = favoris.includes(a.uuid);
+
+        let visible = false;
+        if (roleChoisi === "Tous") {
+          visible = true;
+        } else if (roleChoisi === "Favoris") {
+          visible = estFavori;
+        } else {
+          visible = a.role.displayName === roleChoisi;
+        }
+
+        if (visible) {
+          let etoile = "☆";
+          let classeEtoile = "etoile";
+          if (estFavori) {
+            etoile = "★";
+            classeEtoile = "etoile allumee";
+          }
+
+          zoneAgents.innerHTML += `
+            <div class="agent" onclick="ouvrirAgent(${i})">
+              <img class="agent-photo" src="${a.displayIcon}" alt="${a.displayName}">
+              <div class="agent-infos"><b>${a.displayName}</b><span class="petit">${a.role.displayName}</span></div>
+              <button class="${classeEtoile}" onclick="event.stopPropagation(); basculerFavori('${a.uuid}')" aria-label="Favori">${etoile}</button>
+            </div>
+          `;
+        }
+      }
+    }
+
+    function filtrer(role) {
+      roleChoisi = role;
+      afficherFiltres();
+      afficherAgents();
+    }
+
+    chargerAgents();
+
+    // ---------- Leçon 7 : les derniers matchs ----------
+    const listeMatchs = [
+      { date: "Aujourd'hui",    map: "Ascent", agent: "Viper",     kills: 18, morts: 14, impact: 4 },
+      { date: "Hier",           map: "Haven",  agent: "Sova",      kills: 21, morts: 17, impact: 12 },
+      { date: "Hier",           map: "Lotus",  agent: "Killjoy",   kills: 13, morts: 16, impact: -3 },
+      { date: "Il y a 2 jours", map: "Split",  agent: "Cypher",    kills: 19, morts: 12, impact: 9 },
+      { date: "Il y a 3 jours", map: "Bind",   agent: "Brimstone", kills: 15, morts: 15, impact: 1 }
+    ];
+
+    const zoneMatchs = document.getElementById("matchs");
+    const boutonVoir = document.getElementById("bouton-voir");
+    let toutVoir = false;
+
+    function afficherMatchs() {
+      zoneMatchs.innerHTML = "";
+
+      let nombre = 3;
+      if (toutVoir) {
+        nombre = listeMatchs.length;
+      }
+
+      for (let i = 0; i < nombre; i++) {
+        const m = listeMatchs[i];
+
+        let classe;
+        let texte;
+        if (m.impact >= 0) {
+          classe = "positif";
+          texte = "+" + m.impact;
+        } else {
+          classe = "negatif";
+          texte = m.impact;
+        }
+
+        zoneMatchs.innerHTML += `
+          <tr>
+            <td>${m.date}</td>
+            <td>${m.map}</td>
+            <td>${m.agent}</td>
+            <td>${m.kills} / ${m.morts}</td>
+            <td class="${classe}">${texte}</td>
+          </tr>
+        `;
+      }
+    }
+
+    function basculer() {
+      toutVoir = !toutVoir;
+      if (toutVoir) {
+        boutonVoir.textContent = "Réduire";
+      } else {
+        boutonVoir.textContent = "Voir tout";
+      }
+      afficherMatchs();
+    }
+
+    afficherMatchs();
+    // ---------- Leçon 9 : la fenêtre d'un agent ----------
+    const fondModale = document.getElementById("modale");
+    const contenuModale = document.getElementById("contenu-modale");
+
+    function ouvrirAgent(numero) {
+      const a = listeAgents[numero];
+
+      let html = `
+        <div class="modale-haut">
+          <img src="${a.displayIcon}" alt="${a.displayName}">
+          <div>
+            <h3>${a.displayName}</h3>
+            <span class="petit">${a.role.displayName}</span>
+          </div>
+        </div>
+        <p class="petit">${a.description}</p>
+      `;
+
+      for (let i = 0; i < a.abilities.length; i++) {
+        const c = a.abilities[i];
+
+        let icone = "";
+        if (c.displayIcon) {
+          icone = `<img src="${c.displayIcon}" alt="">`;
+        }
+
+        html += `
+          <div class="capacite">
+            ${icone}
+            <div>
+              <b>${c.displayName}</b>
+              <span class="petit">${c.description}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      contenuModale.innerHTML = html;
+      fondModale.classList.add("ouverte");
+    }
+
+    function fermerAgent() {
+      fondModale.classList.remove("ouverte");
+    }
+
+    document.addEventListener("keydown", function (evenement) {
+      if (evenement.key === "Escape") {
+        fermerAgent();
+      }
+    });
+      // ---------- Leçon 13 : mes lineups ----------
+    let mesLineups = [];
+    try {
+      const sauvegardeLineups = localStorage.getItem("valhub-lineups");
+      if (sauvegardeLineups) {
+        mesLineups = JSON.parse(sauvegardeLineups);
+      }
+    } catch (erreur) {
+      mesLineups = [];
+    }
+
+    const champMap = document.getElementById("champ-map");
+    const champAgent = document.getElementById("champ-agent");
+    const champTitre = document.getElementById("champ-titre");
+    const champNote = document.getElementById("champ-note");
+    const zoneMesLineups = document.getElementById("mes-lineups");
+
+    for (let i = 0; i < maps.length; i++) {
+      champMap.innerHTML += `<option value="${maps[i].nom}">${maps[i].nom}</option>`;
+    }
+
+    function echapper(texte) {
+      const boite = document.createElement("div");
+      boite.textContent = texte;
+      return boite.innerHTML;
+    }
+
+    function sauvegarderLineups() {
+      try {
+        localStorage.setItem("valhub-lineups", JSON.stringify(mesLineups));
+      } catch (erreur) {
+        console.log("Sauvegarde impossible");
+      }
+    }
+
+    function ajouterLineup() {
+      const titre = champTitre.value.trim();
+      if (titre === "") {
+        champTitre.focus();
+        return;
+      }
+
+      const lineup = {
+        id: Date.now(),
+        map: champMap.value,
+        agent: champAgent.value.trim(),
+        titre: titre,
+        note: champNote.value.trim()
+      };
+
+      mesLineups.push(lineup);
+      sauvegarderLineups();
+
+      champTitre.value = "";
+      champAgent.value = "";
+      champNote.value = "";
+      afficherMesLineups();
+    }
+
+    function supprimerLineup(identifiant) {
+      mesLineups = mesLineups.filter(function (l) {
+        return l.id !== identifiant;
+      });
+      sauvegarderLineups();
+      afficherMesLineups();
+    }
+
+    function afficherMesLineups() {
+      zoneMesLineups.innerHTML = "";
+
+      if (mesLineups.length === 0) {
+        zoneMesLineups.innerHTML = `<div class="petit">Tu n'as encore ajouté aucun lineup.</div>`;
+        return;
+      }
+
+      for (let i = mesLineups.length - 1; i >= 0; i--) {
+        const l = mesLineups[i];
+
+        let infos = echapper(l.map);
+        if (l.agent !== "") {
+          infos += " • " + echapper(l.agent);
+        }
+
+        let note = "";
+        if (l.note !== "") {
+          note = `<p class="note">${echapper(l.note)}</p>`;
+        }
+
+        zoneMesLineups.innerHTML += `
+          <div class="lineup">
+            <div class="lineup-haut">
+              <b>${echapper(l.titre)}</b>
+              <button class="supprimer" onclick="supprimerLineup(${l.id})" aria-label="Supprimer ce lineup">✕</button>
+            </div>
+            <div class="petit">${infos}</div>
+            ${note}
+          </div>
+        `;
+      }
+    }
+
+    afficherMesLineups();
+</script>
+
+</body>
+</html>
